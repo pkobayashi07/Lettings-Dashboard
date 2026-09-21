@@ -75,6 +75,7 @@ model Property {
   landlordId     String?
   landlord       Landlord? @relation(fields: [landlordId], references: [id])
   units          Unit[]
+  complianceItems ComplianceItem[]
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -129,12 +130,13 @@ model Tenancy {
   unit       Unit          @relation(fields: [unitId], references: [id])
   tenantId   String
   tenant     Tenant        @relation(fields: [tenantId], references: [id])
-  status     TenancyStatus @default(ENQUIRY)
-  rentAmount Decimal       @db.Decimal(10, 2)
-  startDate  DateTime?
-  endDate    DateTime?
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
+  status       TenancyStatus @default(ENQUIRY)
+  rentAmount   Decimal       @db.Decimal(10, 2)
+  startDate    DateTime?
+  endDate      DateTime?
+  leaseEndDate DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
   payments Payment[]
 
@@ -189,6 +191,30 @@ model MaintenanceTicket {
   @@index([unitId])
   @@index([assignedToId])
   @@index([contractorId])
+}
+
+enum ComplianceItemType {
+  GAS_SAFETY
+  EPC
+  ELECTRICAL_SAFETY
+  FIRE_ALARM
+  INSURANCE
+  OTHER
+}
+
+model ComplianceItem {
+  id         String             @id @default(cuid())
+  propertyId String
+  property   Property           @relation(fields: [propertyId], references: [id])
+  type       ComplianceItemType
+  label      String?
+  issuedDate DateTime?
+  expiryDate DateTime
+  notes      String?
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  @@index([propertyId])
 }
 
 enum PaymentStatus {

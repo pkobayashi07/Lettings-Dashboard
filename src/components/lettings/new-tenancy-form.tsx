@@ -44,6 +44,11 @@ export function NewTenancyForm({
           <input id="rentAmount" name="rentAmount" type="number" min="0" step="0.01" className={inputClass} required />
           <FieldError messages={state?.errors?.rentAmount} />
         </div>
+        <div>
+          <label className={labelClass} htmlFor="leaseEndDate">Lease end date (optional)</label>
+          <input id="leaseEndDate" name="leaseEndDate" type="date" className={inputClass} />
+          <FieldError messages={state?.errors?.leaseEndDate} />
+        </div>
       </div>
       <div className="flex items-center gap-3">
         <button type="submit" disabled={pending} className={primaryButtonClass}>

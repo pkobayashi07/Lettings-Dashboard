@@ -9,6 +9,7 @@ export type TenancyCardData = {
   rentAmount: number;
   startDate: Date | null;
   endDate: Date | null;
+  leaseEndDate: Date | null;
   tenant: { name: string };
   unit: { label: string; property: { addressLine1: string; city: string } };
 };
@@ -39,6 +40,11 @@ export function TenancyCard({ tenancy }: { tenancy: TenancyCardData }) {
       {tenancy.endDate && (
         <p className="text-xs text-neutral-400 dark:text-neutral-500">
           End: {dateFormatter.format(tenancy.endDate)}
+        </p>
+      )}
+      {tenancy.leaseEndDate && tenancy.status === "ACTIVE" && (
+        <p className="text-xs text-neutral-400 dark:text-neutral-500">
+          Lease ends: {dateFormatter.format(tenancy.leaseEndDate)}
         </p>
       )}
       {!isEnded && (

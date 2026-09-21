@@ -192,9 +192,11 @@ async function main() {
     },
   });
 
+  const leaseEndDate = new Date(Date.now() + 20 * 24 * 60 * 60 * 1000);
+
   const activeTenancy = await prisma.tenancy.upsert({
     where: { id: "seed-tenancy-2" },
-    update: {},
+    update: { leaseEndDate },
     create: {
       id: "seed-tenancy-2",
       unitId: unit2.id,
@@ -202,6 +204,7 @@ async function main() {
       status: "ACTIVE",
       rentAmount: 800,
       startDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
+      leaseEndDate,
     },
   });
 
@@ -230,8 +233,41 @@ async function main() {
     },
   });
 
+  await prisma.complianceItem.upsert({
+    where: { id: "seed-compliance-expired" },
+    update: {},
+    create: {
+      id: "seed-compliance-expired",
+      propertyId: property.id,
+      type: "GAS_SAFETY",
+      expiryDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+    },
+  });
+
+  await prisma.complianceItem.upsert({
+    where: { id: "seed-compliance-due-soon" },
+    update: {},
+    create: {
+      id: "seed-compliance-due-soon",
+      propertyId: property2.id,
+      type: "EPC",
+      expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    },
+  });
+
+  await prisma.complianceItem.upsert({
+    where: { id: "seed-compliance-valid" },
+    update: {},
+    create: {
+      id: "seed-compliance-valid",
+      propertyId: property2.id,
+      type: "ELECTRICAL_SAFETY",
+      expiryDate: new Date(Date.now() + 300 * 24 * 60 * 60 * 1000),
+    },
+  });
+
   console.log(
-    "Seeded organization, users, landlord, properties, units, tenants, tenancies, contractor, ticket, and payments."
+    "Seeded organization, users, landlord, properties, units, tenants, tenancies, contractor, ticket, payments, and compliance items."
   );
   console.log(
     "Login as admin@example.com, lettings@example.com, maintenance@example.com, or finance@example.com (password: password123)"

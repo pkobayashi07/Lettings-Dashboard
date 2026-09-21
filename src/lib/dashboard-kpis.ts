@@ -1,6 +1,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/prisma";
+import { COMPLIANCE_DUE_SOON_DAYS } from "@/lib/admin/definitions";
 
 export type Kpi = { label: string; value: string; hint?: string };
 
@@ -24,15 +25,20 @@ async function getOccupancy(organizationId: string) {
 }
 
 async function getAdminKpis(organizationId: string): Promise<Kpi[]> {
-  const [activeUsers, properties] = await Promise.all([
+  const dueSoonBy = new Date(Date.now() + COMPLIANCE_DUE_SOON_DAYS * 24 * 60 * 60 * 1000);
+
+  const [activeUsers, properties, complianceDue] = await Promise.all([
     prisma.user.count({ where: { organizationId } }),
     prisma.property.count({ where: { organizationId } }),
+    prisma.complianceItem.count({
+      where: { expiryDate: { lte: dueSoonBy }, property: { organizationId } },
+    }),
   ]);
 
   return [
     { label: "Active Users", value: String(activeUsers) },
     { label: "Properties Onboarded", value: String(properties) },
-    { label: "Compliance Items Due", value: "—", hint: "Not tracked yet" },
+    { label: "Compliance Items Due", value: String(complianceDue), hint: `expired or due within ${COMPLIANCE_DUE_SOON_DAYS}d` },
   ];
 }
 
@@ -51,7 +57,7 @@ async function getLettingsKpis(organizationId: string): Promise<Kpi[]> {
     prisma.tenancy.count({
       where: {
         status: "ACTIVE",
-        endDate: { gte: now, lte: in30Days },
+        leaseEndDate: { gte: now, lte: in30Days },
         unit: { property: { organizationId } },
       },
     }),

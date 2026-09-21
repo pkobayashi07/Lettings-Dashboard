@@ -54,8 +54,9 @@ staff logins, and sample records:
 | `finance@example.com` | `password123` | Finance | Staff |
 
 Plus a sample landlord, two properties/units, two tenants, an applicant
-tenancy, an active tenancy with a paid and an overdue rent charge, a
-contractor, and a maintenance ticket to explore.
+tenancy, an active tenancy (with a lease end date, a paid and an overdue
+rent charge), a contractor, a maintenance ticket, and three compliance
+items (expired, due soon, and valid) to explore.
 
 ### 4. Run the app
 
@@ -100,7 +101,7 @@ Visit [http://localhost:3000](http://localhost:3000) and sign in with the seeded
 ```
 prisma/schema.prisma        Data model (Organization, User, Property, Unit,
                              Landlord, Tenant, Tenancy, Contractor,
-                             MaintenanceTicket, Payment)
+                             MaintenanceTicket, ComplianceItem, Payment)
 prisma/seed.ts               Seed script for local dev
 src/proxy.ts                 Optimistic auth redirect (login-gate for all routes)
 src/lib/session.ts            JWT session cookie encrypt/decrypt
@@ -109,14 +110,16 @@ src/lib/require-department.ts Per-page department/role access check
 src/lib/nav.ts                 Sidebar nav items, filtered by department/role
 src/lib/form-state.ts          Shared form action state type
 src/lib/zod-helpers.ts         Shared zod preprocessors (optional string/email)
+src/lib/dashboard-kpis.ts      Home dashboard KPI queries, per department
 src/lib/actions/auth.ts        Server actions: login, logout
+src/lib/admin/                 Admin module: zod schemas + server actions
 src/lib/lettings/              Lettings module: zod schemas + server actions
 src/lib/maintenance/           Maintenance module: zod schemas + server actions
 src/lib/finance/                Finance module: zod schemas + server actions
 src/app/login/                Login page
 src/app/(dashboard)/          Authenticated shell (sidebar + topbar) and pages:
-  page.tsx                     Cross-department KPI dashboard (placeholder data)
-  admin/                        Scaffolded, no data yet
+  page.tsx                     Cross-department KPI dashboard (live data)
+  admin/                        Compliance items (certificates + expiry tracking)
   lettings/                     Applicant pipeline, properties/units, tenants, landlords
   maintenance/                  Ticket board, contractors
   finance/                      Rent charges, arrears, collections
@@ -135,9 +138,10 @@ src/app/(dashboard)/          Authenticated shell (sidebar + topbar) and pages:
 - [x] **Lettings module** — landlords, properties/units, tenants, applicant pipeline
 - [x] **Maintenance module** — ticketing (Open → In progress/On hold → Resolved), contractor directory
 - [x] **Finance module** — rent charges, arrears/outstanding tracking, mark-as-paid
-- [ ] **Invoicing** — management fees, landlord statements (not yet built)
 - [x] **Dashboard KPIs** — wired to real data (active users, occupancy, arrears, ticket resolution time, etc.)
-- [ ] **Polish** — document uploads, compliance alerts, notifications, audit log
+- [x] **Compliance tracking** — certificates/documents per property with expiry status (Expired/Due soon/Valid), plus a lease end date on active tenancies (powers "Renewals Due")
+- [ ] **Invoicing** — management fees, landlord statements (not yet built)
+- [ ] **Polish** — document uploads (attach the actual certificate file), notifications, audit log
 
 ## Useful scripts
 

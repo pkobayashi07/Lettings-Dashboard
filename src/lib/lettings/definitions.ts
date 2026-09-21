@@ -69,4 +69,5 @@ export const CreateTenancySchema = z.object({
   rentAmount: z.coerce
     .number({ error: "Enter a rent amount." })
     .positive({ error: "Rent must be greater than zero." }),
+  leaseEndDate: z.preprocess(emptyToUndefined, z.coerce.date().optional()),
 });

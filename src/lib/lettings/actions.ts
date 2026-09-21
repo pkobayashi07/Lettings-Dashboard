@@ -130,6 +130,7 @@ export async function createTenancy(
     tenantId: formData.get("tenantId"),
     unitId: formData.get("unitId"),
     rentAmount: formData.get("rentAmount"),
+    leaseEndDate: formData.get("leaseEndDate"),
   });
 
   if (!validated.success) {
@@ -157,6 +158,7 @@ export async function createTenancy(
       tenantId: tenant.id,
       unitId: unit.id,
       rentAmount: validated.data.rentAmount,
+      leaseEndDate: validated.data.leaseEndDate,
     },
   });
 
