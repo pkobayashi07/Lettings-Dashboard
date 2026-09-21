@@ -80,17 +80,18 @@ Visit [http://localhost:3000](http://localhost:3000) and sign in with the seeded
    - `SESSION_SECRET` — any random string, e.g. output of
      `openssl rand -base64 32`
 4. **Deploy.** Vercel runs `npm install` (which triggers `prisma generate`
-   via the `postinstall` script) and `npm run build` automatically.
-5. **Apply migrations and seed data** — the build step does *not* run
-   migrations automatically. Once you have the `DATABASE_URL`, run this
-   once (from your machine, or hand the connection string to whoever is
-   helping you set this up):
-   ```bash
-   DATABASE_URL="<your connection string>" npx prisma migrate deploy
-   DATABASE_URL="<your connection string>" npx tsx prisma/seed.ts
-   ```
-6. Visit your new `*.vercel.app` URL and sign in with one of the seeded
+   via the `postinstall` script), then `npm run build`, which itself runs
+   `prisma migrate deploy` and seeds the demo data before building —
+   no manual database step needed.
+5. Visit your new `*.vercel.app` URL and sign in with one of the seeded
    accounts (see the table above).
+
+> **Note:** the `build` script re-runs the (idempotent) seed on every
+> deploy, which is convenient for a demo/test environment but not what
+> you'd want for a real production launch with real data. Before going
+> live for real, change `"build"` in `package.json` back to
+> `"prisma migrate deploy && next build"` (drop the `npm run db:seed`
+> step).
 
 ## Project structure
 
