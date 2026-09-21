@@ -6,10 +6,10 @@ const prisma = new PrismaClient();
 async function main() {
   const organization = await prisma.organization.upsert({
     where: { id: "seed-org" },
-    update: {},
+    update: { name: "Bucknell Property" },
     create: {
       id: "seed-org",
-      name: "Acme Property Management",
+      name: "Bucknell Property",
     },
   });
 

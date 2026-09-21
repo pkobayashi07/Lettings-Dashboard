@@ -43,7 +43,7 @@ npm run db:migrate   # creates tables from prisma/schema.prisma
 npm run db:seed      # creates a demo organization + admin user
 ```
 
-The seed script creates an organization ("Acme Property Management"), demo
+The seed script creates an organization ("Bucknell Property"), demo
 staff logins, and sample records:
 
 | Email | Password | Department | Role |
