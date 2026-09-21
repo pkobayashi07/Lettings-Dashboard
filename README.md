@@ -136,7 +136,7 @@ src/app/(dashboard)/          Authenticated shell (sidebar + topbar) and pages:
 - [x] **Maintenance module** — ticketing (Open → In progress/On hold → Resolved), contractor directory
 - [x] **Finance module** — rent charges, arrears/outstanding tracking, mark-as-paid
 - [ ] **Invoicing** — management fees, landlord statements (not yet built)
-- [ ] **Dashboard & reporting** — live KPIs wired to real data (currently placeholders)
+- [x] **Dashboard KPIs** — wired to real data (active users, occupancy, arrears, ticket resolution time, etc.)
 - [ ] **Polish** — document uploads, compliance alerts, notifications, audit log
 
 ## Useful scripts

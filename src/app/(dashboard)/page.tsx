@@ -1,37 +1,18 @@
 import { getCurrentUser } from "@/lib/dal";
 import { getVisibleNavItems } from "@/lib/nav";
 import { KpiTile } from "@/components/kpi-tile";
-
-const KPIS_BY_DEPARTMENT = {
-  ADMIN: [
-    { label: "Active Users", value: "—" },
-    { label: "Properties Onboarded", value: "—" },
-    { label: "Compliance Items Due", value: "—" },
-  ],
-  LETTINGS: [
-    { label: "Open Applications", value: "—" },
-    { label: "Vacant Units", value: "—" },
-    { label: "Renewals Due (30d)", value: "—" },
-  ],
-  MAINTENANCE: [
-    { label: "Open Tickets", value: "—" },
-    { label: "Urgent Tickets", value: "—" },
-    { label: "Avg. Resolution Time", value: "—" },
-  ],
-  FINANCE: [
-    { label: "Rent Arrears", value: "—" },
-    { label: "Outstanding Invoices", value: "—" },
-    { label: "Occupancy Rate", value: "—" },
-  ],
-} as const;
+import { getDashboardKpis } from "@/lib/dashboard-kpis";
 
 export default async function DashboardHomePage() {
   const user = await getCurrentUser();
   const visibleDepartments = getVisibleNavItems(user.department, user.role)
     .map((item) => item.department)
-    .filter((department): department is keyof typeof KPIS_BY_DEPARTMENT =>
-      department !== "DASHBOARD"
+    .filter(
+      (department): department is "ADMIN" | "LETTINGS" | "MAINTENANCE" | "FINANCE" =>
+        department !== "DASHBOARD"
     );
+
+  const kpisByDepartment = await getDashboardKpis(user.organizationId, visibleDepartments);
 
   return (
     <div className="space-y-8">
@@ -50,8 +31,8 @@ export default async function DashboardHomePage() {
             {department.charAt(0) + department.slice(1).toLowerCase()}
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {KPIS_BY_DEPARTMENT[department].map((kpi) => (
-              <KpiTile key={kpi.label} label={kpi.label} value={kpi.value} />
+            {kpisByDepartment[department].map((kpi) => (
+              <KpiTile key={kpi.label} label={kpi.label} value={kpi.value} hint={kpi.hint} />
             ))}
           </div>
         </section>
