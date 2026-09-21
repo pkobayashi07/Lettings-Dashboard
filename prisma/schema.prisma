@@ -1,0 +1,189 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Department {
+  ADMIN
+  LETTINGS
+  MAINTENANCE
+  FINANCE
+}
+
+enum Role {
+  OWNER
+  MANAGER
+  STAFF
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users      User[]
+  properties Property[]
+  landlords  Landlord[]
+  tenants    Tenant[]
+}
+
+model User {
+  id             String     @id @default(cuid())
+  email          String     @unique
+  passwordHash   String
+  name           String
+  department     Department
+  role           Role       @default(STAFF)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  assignedMaintenanceTickets MaintenanceTicket[] @relation("AssignedStaff")
+
+  @@index([organizationId])
+}
+
+model Landlord {
+  id             String   @id @default(cuid())
+  name           String
+  email          String?
+  phone          String?
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  properties     Property[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([organizationId])
+}
+
+model Property {
+  id             String   @id @default(cuid())
+  addressLine1   String
+  addressLine2   String?
+  city           String
+  postcode       String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  landlordId     String?
+  landlord       Landlord? @relation(fields: [landlordId], references: [id])
+  units          Unit[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([organizationId])
+  @@index([landlordId])
+}
+
+model Unit {
+  id          String   @id @default(cuid())
+  propertyId  String
+  property    Property @relation(fields: [propertyId], references: [id])
+  label       String
+  bedrooms    Int?
+  rentAmount  Decimal? @db.Decimal(10, 2)
+
+  tenancies           Tenancy[]
+  maintenanceTickets  MaintenanceTicket[]
+  createdAt           DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([propertyId])
+}
+
+model Tenant {
+  id             String   @id @default(cuid())
+  name           String
+  email          String?
+  phone          String?
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  tenancies      Tenancy[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([organizationId])
+}
+
+enum TenancyStatus {
+  APPLICANT
+  ACTIVE
+  ENDING
+  ENDED
+}
+
+model Tenancy {
+  id         String        @id @default(cuid())
+  unitId     String
+  unit       Unit          @relation(fields: [unitId], references: [id])
+  tenantId   String
+  tenant     Tenant        @relation(fields: [tenantId], references: [id])
+  status     TenancyStatus @default(APPLICANT)
+  rentAmount Decimal       @db.Decimal(10, 2)
+  startDate  DateTime?
+  endDate    DateTime?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  payments Payment[]
+
+  @@index([unitId])
+  @@index([tenantId])
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  ON_HOLD
+  RESOLVED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model MaintenanceTicket {
+  id          String         @id @default(cuid())
+  unitId      String
+  unit        Unit           @relation(fields: [unitId], references: [id])
+  title       String
+  description String
+  status      TicketStatus   @default(OPEN)
+  priority    TicketPriority @default(MEDIUM)
+  assignedToId String?
+  assignedTo   User?         @relation("AssignedStaff", fields: [assignedToId], references: [id])
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([unitId])
+  @@index([assignedToId])
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  OVERDUE
+}
+
+model Payment {
+  id        String        @id @default(cuid())
+  tenancyId String
+  tenancy   Tenancy       @relation(fields: [tenancyId], references: [id])
+  amount    Decimal       @db.Decimal(10, 2)
+  dueDate   DateTime
+  paidDate  DateTime?
+  status    PaymentStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([tenancyId])
+}
