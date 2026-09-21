@@ -26,10 +26,11 @@ model Organization {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users      User[]
-  properties Property[]
-  landlords  Landlord[]
-  tenants    Tenant[]
+  users       User[]
+  properties  Property[]
+  landlords   Landlord[]
+  tenants     Tenant[]
+  contractors Contractor[]
 }
 
 model User {
@@ -155,21 +156,39 @@ enum TicketPriority {
   URGENT
 }
 
+model Contractor {
+  id             String   @id @default(cuid())
+  name           String
+  trade          String?
+  email          String?
+  phone          String?
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  tickets        MaintenanceTicket[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([organizationId])
+}
+
 model MaintenanceTicket {
-  id          String         @id @default(cuid())
-  unitId      String
-  unit        Unit           @relation(fields: [unitId], references: [id])
-  title       String
-  description String
-  status      TicketStatus   @default(OPEN)
-  priority    TicketPriority @default(MEDIUM)
+  id           String         @id @default(cuid())
+  unitId       String
+  unit         Unit           @relation(fields: [unitId], references: [id])
+  title        String
+  description  String
+  status       TicketStatus   @default(OPEN)
+  priority     TicketPriority @default(MEDIUM)
   assignedToId String?
-  assignedTo   User?         @relation("AssignedStaff", fields: [assignedToId], references: [id])
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  assignedTo   User?          @relation("AssignedStaff", fields: [assignedToId], references: [id])
+  contractorId String?
+  contractor   Contractor?    @relation(fields: [contractorId], references: [id])
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 
   @@index([unitId])
   @@index([assignedToId])
+  @@index([contractorId])
 }
 
 enum PaymentStatus {

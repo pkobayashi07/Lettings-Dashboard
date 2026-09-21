@@ -37,10 +37,17 @@ npm run db:migrate   # creates tables from prisma/schema.prisma
 npm run db:seed      # creates a demo organization + admin user
 ```
 
-The seed script creates:
+The seed script creates an organization ("Acme Property Management"), demo
+staff logins, and sample records:
 
-- Organization: "Acme Property Management"
-- User: `admin@example.com` / `password123` (Department: Admin, Role: Owner)
+| Email | Password | Department | Role |
+|---|---|---|---|
+| `admin@example.com` | `password123` | Admin | Owner (full access) |
+| `lettings@example.com` | `password123` | Lettings | Staff |
+| `maintenance@example.com` | `password123` | Maintenance | Staff |
+
+Plus a sample landlord, property, unit, tenant, tenancy, contractor, and
+maintenance ticket to explore.
 
 ### 4. Run the app
 
@@ -54,19 +61,25 @@ Visit [http://localhost:3000](http://localhost:3000) and sign in with the seeded
 
 ```
 prisma/schema.prisma        Data model (Organization, User, Property, Unit,
-                             Landlord, Tenant, Tenancy, MaintenanceTicket, Payment)
+                             Landlord, Tenant, Tenancy, Contractor,
+                             MaintenanceTicket, Payment)
 prisma/seed.ts               Seed script for local dev
 src/proxy.ts                 Optimistic auth redirect (login-gate for all routes)
 src/lib/session.ts            JWT session cookie encrypt/decrypt
 src/lib/dal.ts                Data Access Layer: verifySession(), getCurrentUser()
 src/lib/require-department.ts Per-page department/role access check
 src/lib/nav.ts                 Sidebar nav items, filtered by department/role
+src/lib/form-state.ts          Shared form action state type
+src/lib/zod-helpers.ts         Shared zod preprocessors (optional string/email)
 src/lib/actions/auth.ts        Server actions: login, logout
+src/lib/lettings/              Lettings module: zod schemas + server actions
+src/lib/maintenance/           Maintenance module: zod schemas + server actions
 src/app/login/                Login page
 src/app/(dashboard)/          Authenticated shell (sidebar + topbar) and pages:
   page.tsx                     Cross-department KPI dashboard (placeholder data)
-  admin/, lettings/,
-  maintenance/, finance/       Per-department pages (scaffolded, no data yet)
+  admin/, finance/              Scaffolded, no data yet
+  lettings/                     Applicant pipeline, properties/units, tenants, landlords
+  maintenance/                  Ticket board, contractors
 ```
 
 ## Roles & departments
@@ -78,13 +91,12 @@ src/app/(dashboard)/          Authenticated shell (sidebar + topbar) and pages:
 
 ## Roadmap
 
-This is the foundation phase (auth, data model, base layout). Planned next:
-
-1. **Lettings module** — applicant pipeline, tenancy management
-2. **Maintenance module** — ticketing, contractor assignment
-3. **Finance module** — rent/payments tracking, arrears, invoicing
-4. **Dashboard & reporting** — live KPIs wired to real data
-5. **Polish** — document uploads, compliance alerts, notifications, audit log
+- [x] **Foundation** — auth, org/user/role model, base layout
+- [x] **Lettings module** — landlords, properties/units, tenants, applicant pipeline
+- [x] **Maintenance module** — ticketing (Open → In progress/On hold → Resolved), contractor directory
+- [ ] **Finance module** — rent/payments tracking, arrears, invoicing
+- [ ] **Dashboard & reporting** — live KPIs wired to real data (currently placeholders)
+- [ ] **Polish** — document uploads, compliance alerts, notifications, audit log
 
 ## Useful scripts
 

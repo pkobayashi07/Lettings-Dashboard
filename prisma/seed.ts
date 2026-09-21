@@ -102,8 +102,52 @@ async function main() {
     },
   });
 
-  console.log("Seeded organization, users, landlord, property, unit, tenant, and a sample tenancy.");
-  console.log("Login as admin@example.com or lettings@example.com (password: password123)");
+  await prisma.user.upsert({
+    where: { email: "maintenance@example.com" },
+    update: {},
+    create: {
+      email: "maintenance@example.com",
+      passwordHash,
+      name: "Max Tenance",
+      department: "MAINTENANCE",
+      role: "STAFF",
+      organizationId: organization.id,
+    },
+  });
+
+  const contractor = await prisma.contractor.upsert({
+    where: { id: "seed-contractor" },
+    update: {},
+    create: {
+      id: "seed-contractor",
+      name: "Riverside Plumbing Ltd",
+      trade: "Plumbing",
+      email: "jobs@riversideplumbing.example.com",
+      phone: "07700 900789",
+      organizationId: organization.id,
+    },
+  });
+
+  await prisma.maintenanceTicket.upsert({
+    where: { id: "seed-ticket" },
+    update: {},
+    create: {
+      id: "seed-ticket",
+      unitId: unit.id,
+      title: "Leaking kitchen tap",
+      description: "Tenant reports a steady drip from the kitchen mixer tap.",
+      status: "OPEN",
+      priority: "MEDIUM",
+      contractorId: contractor.id,
+    },
+  });
+
+  console.log(
+    "Seeded organization, users, landlord, property, unit, tenant, tenancy, contractor, and a sample ticket."
+  );
+  console.log(
+    "Login as admin@example.com, lettings@example.com, or maintenance@example.com (password: password123)"
+  );
 }
 
 main()

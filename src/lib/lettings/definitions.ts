@@ -1,5 +1,6 @@
 import * as z from "zod";
 import type { TenancyStatus } from "@prisma/client";
+import { emptyToUndefined, optionalString, optionalEmail } from "@/lib/zod-helpers";
 
 export const TENANCY_PIPELINE: TenancyStatus[] = [
   "ENQUIRY",
@@ -23,23 +24,7 @@ export const TENANCY_STATUS_LABELS: Record<TenancyStatus, string> = {
   ENDED: "Ended",
 };
 
-const emptyToUndefined = (val: unknown) => (val === "" ? undefined : val);
-
-const optionalString = () =>
-  z.preprocess(emptyToUndefined, z.string().trim().optional());
-
-const optionalEmail = () =>
-  z.preprocess(
-    emptyToUndefined,
-    z.email({ error: "Enter a valid email." }).optional()
-  );
-
-export type FormState =
-  | {
-      errors?: Record<string, string[]>;
-      message?: string;
-    }
-  | undefined;
+export type { FormState } from "@/lib/form-state";
 
 export const CreateLandlordSchema = z.object({
   name: z.string().trim().min(1, { error: "Name is required." }),
