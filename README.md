@@ -51,9 +51,11 @@ staff logins, and sample records:
 | `admin@example.com` | `password123` | Admin | Owner (full access) |
 | `lettings@example.com` | `password123` | Lettings | Staff |
 | `maintenance@example.com` | `password123` | Maintenance | Staff |
+| `finance@example.com` | `password123` | Finance | Staff |
 
-Plus a sample landlord, property, unit, tenant, tenancy, contractor, and
-maintenance ticket to explore.
+Plus a sample landlord, two properties/units, two tenants, an applicant
+tenancy, an active tenancy with a paid and an overdue rent charge, a
+contractor, and a maintenance ticket to explore.
 
 ### 4. Run the app
 
@@ -110,12 +112,14 @@ src/lib/zod-helpers.ts         Shared zod preprocessors (optional string/email)
 src/lib/actions/auth.ts        Server actions: login, logout
 src/lib/lettings/              Lettings module: zod schemas + server actions
 src/lib/maintenance/           Maintenance module: zod schemas + server actions
+src/lib/finance/                Finance module: zod schemas + server actions
 src/app/login/                Login page
 src/app/(dashboard)/          Authenticated shell (sidebar + topbar) and pages:
   page.tsx                     Cross-department KPI dashboard (placeholder data)
-  admin/, finance/              Scaffolded, no data yet
+  admin/                        Scaffolded, no data yet
   lettings/                     Applicant pipeline, properties/units, tenants, landlords
   maintenance/                  Ticket board, contractors
+  finance/                      Rent charges, arrears, collections
 ```
 
 ## Roles & departments
@@ -130,7 +134,8 @@ src/app/(dashboard)/          Authenticated shell (sidebar + topbar) and pages:
 - [x] **Foundation** — auth, org/user/role model, base layout
 - [x] **Lettings module** — landlords, properties/units, tenants, applicant pipeline
 - [x] **Maintenance module** — ticketing (Open → In progress/On hold → Resolved), contractor directory
-- [ ] **Finance module** — rent/payments tracking, arrears, invoicing
+- [x] **Finance module** — rent charges, arrears/outstanding tracking, mark-as-paid
+- [ ] **Invoicing** — management fees, landlord statements (not yet built)
 - [ ] **Dashboard & reporting** — live KPIs wired to real data (currently placeholders)
 - [ ] **Polish** — document uploads, compliance alerts, notifications, audit log
 

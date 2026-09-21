@@ -142,11 +142,99 @@ async function main() {
     },
   });
 
+  await prisma.user.upsert({
+    where: { email: "finance@example.com" },
+    update: {},
+    create: {
+      email: "finance@example.com",
+      passwordHash,
+      name: "Fin Anders",
+      department: "FINANCE",
+      role: "STAFF",
+      organizationId: organization.id,
+    },
+  });
+
+  const property2 = await prisma.property.upsert({
+    where: { id: "seed-property-2" },
+    update: {},
+    create: {
+      id: "seed-property-2",
+      addressLine1: "45 Oak Street",
+      city: "Leeds",
+      postcode: "LS2 3EF",
+      organizationId: organization.id,
+      landlordId: landlord.id,
+    },
+  });
+
+  const unit2 = await prisma.unit.upsert({
+    where: { id: "seed-unit-2" },
+    update: {},
+    create: {
+      id: "seed-unit-2",
+      propertyId: property2.id,
+      label: "Flat 2B",
+      bedrooms: 1,
+      rentAmount: 800,
+    },
+  });
+
+  const tenant2 = await prisma.tenant.upsert({
+    where: { id: "seed-tenant-2" },
+    update: {},
+    create: {
+      id: "seed-tenant-2",
+      name: "Taylor Morgan",
+      email: "taylor.morgan@example.com",
+      phone: "07700 900654",
+      organizationId: organization.id,
+    },
+  });
+
+  const activeTenancy = await prisma.tenancy.upsert({
+    where: { id: "seed-tenancy-2" },
+    update: {},
+    create: {
+      id: "seed-tenancy-2",
+      unitId: unit2.id,
+      tenantId: tenant2.id,
+      status: "ACTIVE",
+      rentAmount: 800,
+      startDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
+    },
+  });
+
+  await prisma.payment.upsert({
+    where: { id: "seed-payment-paid" },
+    update: {},
+    create: {
+      id: "seed-payment-paid",
+      tenancyId: activeTenancy.id,
+      amount: 800,
+      dueDate: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000),
+      paidDate: new Date(Date.now() - 34 * 24 * 60 * 60 * 1000),
+      status: "PAID",
+    },
+  });
+
+  await prisma.payment.upsert({
+    where: { id: "seed-payment-overdue" },
+    update: {},
+    create: {
+      id: "seed-payment-overdue",
+      tenancyId: activeTenancy.id,
+      amount: 800,
+      dueDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+      status: "PENDING",
+    },
+  });
+
   console.log(
-    "Seeded organization, users, landlord, property, unit, tenant, tenancy, contractor, and a sample ticket."
+    "Seeded organization, users, landlord, properties, units, tenants, tenancies, contractor, ticket, and payments."
   );
   console.log(
-    "Login as admin@example.com, lettings@example.com, or maintenance@example.com (password: password123)"
+    "Login as admin@example.com, lettings@example.com, maintenance@example.com, or finance@example.com (password: password123)"
   );
 }
 
