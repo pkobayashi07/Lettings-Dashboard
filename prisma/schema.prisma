@@ -112,7 +112,11 @@ model Tenant {
 }
 
 enum TenancyStatus {
-  APPLICANT
+  ENQUIRY
+  VIEWING
+  REFERENCING
+  OFFER
+  SIGNED
   ACTIVE
   ENDING
   ENDED
@@ -124,7 +128,7 @@ model Tenancy {
   unit       Unit          @relation(fields: [unitId], references: [id])
   tenantId   String
   tenant     Tenant        @relation(fields: [tenantId], references: [id])
-  status     TenancyStatus @default(APPLICANT)
+  status     TenancyStatus @default(ENQUIRY)
   rentAmount Decimal       @db.Decimal(10, 2)
   startDate  DateTime?
   endDate    DateTime?

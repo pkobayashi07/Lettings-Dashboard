@@ -1,0 +1,21 @@
+export const inputClass =
+  "w-full rounded-md border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100";
+
+export const labelClass =
+  "mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300";
+
+export const primaryButtonClass =
+  "rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-neutral-700 disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-300";
+
+export const secondaryButtonClass =
+  "rounded-md border border-neutral-300 px-3 py-1.5 text-xs font-medium text-neutral-700 transition hover:bg-neutral-100 disabled:opacity-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800";
+
+export function FieldError({ messages }: { messages?: string[] }) {
+  if (!messages?.length) return null;
+  return <p className="mt-1 text-xs text-red-600">{messages[0]}</p>;
+}
+
+export function FormMessage({ message }: { message?: string }) {
+  if (!message) return null;
+  return <p className="text-sm text-neutral-600 dark:text-neutral-400">{message}</p>;
+}
