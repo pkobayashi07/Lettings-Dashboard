@@ -2,6 +2,12 @@
 
 A property management CRM/dashboard for Admin, Lettings, Maintenance, and Finance teams.
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fpkobayashi07%2FLettings-Dashboard%2Ftree%2Fclaude%2Fproperty-manager-crm-plan-m77rjn&env=DATABASE_URL,SESSION_SECRET&envDescription=Postgres+connection+string+and+a+random+session+secret&project-name=lettings-dashboard&repository-name=lettings-dashboard)
+
+> The button gets you to the Vercel import screen pre-filled; if anything
+> looks off, use the manual steps below instead — see "Deploying a live
+> preview".
+
 ## Stack
 
 - [Next.js 16](https://nextjs.org) (App Router, TypeScript)
@@ -56,6 +62,35 @@ npm run dev
 ```
 
 Visit [http://localhost:3000](http://localhost:3000) and sign in with the seeded admin account.
+
+## Deploying a live preview (Vercel)
+
+1. **Create a free Postgres database** — [Neon](https://neon.tech) or
+   [Supabase](https://supabase.com) both have a free tier that works well
+   with Vercel. Create a project and copy the connection string (it looks
+   like `postgresql://user:password@host/dbname?sslmode=require`).
+2. **Import this repo on Vercel** — go to
+   [vercel.com/new](https://vercel.com/new), import
+   `pkobayashi07/Lettings-Dashboard`, and select the
+   `claude/property-manager-crm-plan-m77rjn` branch (or whichever branch
+   you're testing).
+3. **Add environment variables** in the Vercel project's Settings →
+   Environment Variables:
+   - `DATABASE_URL` — the connection string from step 1
+   - `SESSION_SECRET` — any random string, e.g. output of
+     `openssl rand -base64 32`
+4. **Deploy.** Vercel runs `npm install` (which triggers `prisma generate`
+   via the `postinstall` script) and `npm run build` automatically.
+5. **Apply migrations and seed data** — the build step does *not* run
+   migrations automatically. Once you have the `DATABASE_URL`, run this
+   once (from your machine, or hand the connection string to whoever is
+   helping you set this up):
+   ```bash
+   DATABASE_URL="<your connection string>" npx prisma migrate deploy
+   DATABASE_URL="<your connection string>" npx tsx prisma/seed.ts
+   ```
+6. Visit your new `*.vercel.app` URL and sign in with one of the seeded
+   accounts (see the table above).
 
 ## Project structure
 
